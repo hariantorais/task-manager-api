@@ -38,14 +38,16 @@ class AuthController extends Controller
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
-                'message' => 'The provided credentials are incorrect.',
-            ], 401);
+                'status' => 'error',
+                'message' => 'Email or password is incorrect',
+            ]);
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
             'access_token' => $token,
+            'status' => 'ok',
             'data' => $user,
             'message' => 'Logged in successfully',
         ], 200);
