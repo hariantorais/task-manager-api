@@ -12,10 +12,24 @@ class UserController extends Controller
      */
     public function index()
     {
-        $user = User::all();
+        $user = User::where('role', 'member')->get();
         return response()->json([
             'data' => $user
         ]);
+    }
+
+    public function search(Request $request)
+    {
+        $user = User::whereDoesntHave('cards', function ($query) use ($request) {
+            $query->where('cards.id', $request->cardId);
+        })
+        ->where('name', 'like', '%' . $request->search . '%')->get();
+        if ($user){
+            $data = ['data' => $user];
+        } else {
+            $data = ['message' => 'No data found'];
+        }
+        return response()->json($data);
     }
 
     /**
